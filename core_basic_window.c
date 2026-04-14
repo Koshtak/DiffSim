@@ -28,8 +28,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
-//#define RAYGUI_IMPLEMENTATION
-//#include "raygui.h"
+#define RAYGUI_IMPLEMENTATION
+#include "raygui.h"
 
 #define MAX_CISIM 1000
 
@@ -58,7 +58,7 @@ struct cisim{
 struct cisim evren[MAX_CISIM] = {0};
 int aktifCisimSayisi = 0;
 
-bool daireEkle(float baslangicX, float baslangicY, float yaricap, float kutle){
+bool daireEkle(float hizX, float hizY, float baslangicX, float baslangicY, float yaricap, float kutle){
     if(aktifCisimSayisi>=MAX_CISIM)
     return false;
     
@@ -67,8 +67,8 @@ bool daireEkle(float baslangicX, float baslangicY, float yaricap, float kutle){
     evren[indeks].konum.x = baslangicX;
     evren[indeks].konum.y = baslangicY;
     
-    evren[indeks].hiz.x = 50.0f;
-    evren[indeks].hiz.y = 10.0f;
+    evren[indeks].hiz.x = hizX;
+    evren[indeks].hiz.y = hizY;
     
     evren[indeks].kutle = kutle;
     evren[indeks].sekil = daire;
@@ -78,7 +78,7 @@ bool daireEkle(float baslangicX, float baslangicY, float yaricap, float kutle){
     aktifCisimSayisi++;
     return true;
 }
-bool kareEkle(float baslangicX, float baslangicY, float genislik, float uzunluk, float kutle){
+bool kareEkle(float hizX, float hizY, float baslangicX, float baslangicY, float genislik, float uzunluk, float kutle){
     if(aktifCisimSayisi>=MAX_CISIM)
     return false;
     
@@ -87,8 +87,8 @@ bool kareEkle(float baslangicX, float baslangicY, float genislik, float uzunluk,
     evren[indeks].konum.x = baslangicX;
     evren[indeks].konum.y = baslangicY;
     
-    evren[indeks].hiz.x = 0.0f;
-    evren[indeks].hiz.y = 0.0f;
+    evren[indeks].hiz.x = hizX;
+    evren[indeks].hiz.y = hizY;
     
     evren[indeks].kutle = kutle;
     evren[indeks].sekil = kare;
@@ -111,7 +111,11 @@ int main(void)
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
     // Main game loop
-    daireEkle( 800.0f, 40.0f, 50.0f, 100.0f);
+    
+    float g=581.0f;
+    float esneklikKatsayisi=0.8f;
+    bool ciziliyorMu = false;
+    Vector2 cizimBaslangic = {0};
     
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
@@ -121,9 +125,7 @@ int main(void)
         //----------------------------------------------------------------------------------
         float dt = GetFrameTime();
         if(dt>=0.1f){dt = 0.1f;}
-        float g=581.0f;
-        float esneklikKatsayisi=0.8f;
-        
+               
         for(int i=0;i<aktifCisimSayisi;i++){
             //düşüş
             evren[i].hiz.y += dt*g;
@@ -159,6 +161,21 @@ int main(void)
                 }
             }
         }
+        //vektör çizme
+        if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+            ciziliyorMu=true;
+            cizimBaslangic=GetMousePosition(); //vector2 döndürür
+        }
+        //vektöre göre fırlatma
+        if(IsMouseButtonReleased(MOUSE_BUTTON_LEFT) && ciziliyorMu==true){
+            
+                Vector2 cizimBitis=GetMousePosition();
+                
+                float hizX=(cizimBitis.x-cizimBaslangic.x)*5.0f;
+                float hizY=(cizimBitis.y-cizimBaslangic.y)*5.0f;
+                daireEkle(hizX, hizY, cizimBaslangic.x, cizimBaslangic.y, 25.0f, 100.0f);
+            
+        }
     
         
         
@@ -176,9 +193,9 @@ int main(void)
             }
             ClearBackground(RAYWHITE);
 
-            DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
             //--ADMİN Paneli--
-            
+            GuiSliderBar((Rectangle) {70,20,100,20}, "sekmez", "seker", &esneklikKatsayisi, 0.0f, 1.0f);
+            GuiSliderBar((Rectangle) {70,90,100,20}, "düşük yerçekimi", "yüksek", &g, 0.0f, 1000.0f);
 
         EndDrawing();
         //----------------------------------------------------------------------------------
