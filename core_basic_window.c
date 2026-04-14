@@ -166,6 +166,7 @@ int main(void)
             ciziliyorMu=true;
             cizimBaslangic=GetMousePosition(); //vector2 döndürür
         }
+        
         //vektöre göre fırlatma
         if(IsMouseButtonReleased(MOUSE_BUTTON_LEFT) && ciziliyorMu==true){
             
@@ -174,6 +175,7 @@ int main(void)
                 float hizX=(cizimBitis.x-cizimBaslangic.x)*5.0f;
                 float hizY=(cizimBitis.y-cizimBaslangic.y)*5.0f;
                 daireEkle(hizX, hizY, cizimBaslangic.x, cizimBaslangic.y, 25.0f, 100.0f);
+                ciziliyorMu=false;
             
         }
     
@@ -182,6 +184,10 @@ int main(void)
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
+        
+            if(ciziliyorMu==true){
+                DrawLineEx(cizimBaslangic, GetMousePosition(),1.5f, GREEN);
+            }
             for(int i=0;i<aktifCisimSayisi;i++)
             {
                 if(evren[i].sekil==daire)
