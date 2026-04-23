@@ -103,9 +103,10 @@ int main(void)
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 1600;
-    const int screenHeight = 900;
-
+    const int screenWidth = 1200;
+    const int screenHeight = 700;
+    
+    SetConfigFlags(FLAG_WINDOW_UNDECORATED);
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second

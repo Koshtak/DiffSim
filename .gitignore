@@ -1,0 +1,8 @@
+DiffSim
+app
+*.o
+
+vgcore.*
+
+raylib_src/
+build/
